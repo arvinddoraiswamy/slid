@@ -8,53 +8,29 @@ import re
 import sys
 import os
 
-#binary_name = './static_hello'
 binary_name = './static_blank'
 glibc_sources_dir = 'glibc-2.15'
 
-def main():
-  """
-  First function that is called.
-  """
-  try:
-    get_idapro_symbols()
-    get_glibc_version()
-    is_binary_stripped = check_if_binary_stripped()
-
-    if is_binary_stripped == 'not stripped':
-      list_of_symbols = get_symbols_from_binary()
-      #library_symbols = search_library_for_symbols(list_of_symbols)
-      library_symbols = search_library_for_symbols()
-
-      with open('libraryfuncs','w') as f:
-        for i in library_symbols:
-          f.write(i+'\n')
-      #f.close()
-  except:
-    print 'Oops something went wrong. Dunno what. Go debug.' 
-
-def get_idapro_symbols():
+def get_idapro_symbols(saved_idapro_functions_file):
   """
   Get IDA PRO's saved function list and store for future use.
   """
-  global idapro_symbols
   try:
-    with open('ida_functions.txt','rU') as f:
+    with open(saved_idapro_functions_file,'rU') as f:
       t1=f.read()
       idapro_symbols = t1.split('\n')
   except IOError:
-    print 'Did you run IDA and save its functions as mentioned in the ReadMe? :)'
+    sys.stderr.write('Did you run IDA and save its functions as mentioned in the ReadMe? :)\n')
     os._exit(1)
-    #f.close()
 
-#def search_library_for_symbols(list_of_symbols):
-def search_library_for_symbols():
+  return idapro_symbols
+
+def search_library_for_symbols(idapro_symbols):
   """
   Search for IDA symbols in glibc source code.
   """
-  global idapro_symbols
   library_symbols = []
-  #for symbol in list_of_symbols:
+
   try:
     if os.path.isdir(glibc_sources_dir):
       for symbol in idapro_symbols:
@@ -68,9 +44,9 @@ def search_library_for_symbols():
           if int(t1,10) > 0:
             library_symbols.append(symbol)
     else:
-      print "Sources directory does not exist. Check name and copy sources into it."
+      sys.stderr.write("Sources directory does not exist. Check name and copy sources into it.\n")
   except OSError:
-    print "Error grepping through sources. Are you sure grep and wc exist on your system? And you copied the sources in?\n"
+    sys.stderr.write("Error grepping through sources. Are you sure grep and wc exist on your system? And you copied the sources in?\n")
     os._exit(1)
   
   return library_symbols
@@ -86,23 +62,6 @@ def get_symbols_from_binary():
   t1 = p1.communicate()[0]
   t2=t1.split('\n')
 
-  #Last line is blank - ignore it
-#  while count<len(t2)-1:
-#    t3=[]
-#    t3=t2[count].split()
-#    if not t2[count].startswith(" "):
-#      list_of_symbols.append(t3[2])
-#    else:
-#      list_of_symbols.append(t3[-1])
-#    count+=1
-#  
-#  for count in range(len(t2)-1):
-#    t3=t2[count].split()
-#    if not t2[count].startswith(" "):
-#      list_of_symbols.append(t3[2])
-#    else:
-#      list_of_symbols.append(t3[-1])
-#
   t3 = [symbol.split() for symbol in t2]
   for count,symbol in enumerate(t2):
     if symbol:
@@ -126,7 +85,7 @@ def get_glibc_version():
     print glibc_version_output
     print "\n"
   except OSError:
-    print "Are you sure you're on a Debian system? If not comment the apt-cache detection out and rerun.\n"
+    sys.stderr.write("Are you sure you're on a Debian system? If not comment the apt-cache detection out and rerun.\n")
     os._exit(1)
 
   try:
@@ -139,7 +98,7 @@ def get_glibc_version():
     print "\n"
     print "Ensure that you download the sources of the glibc version displayed here and place them in the directory given above.\n"
   except OSError:
-    print "Ha. No ldd either? Manually identify your glibc version and copy the correct sources in.\n"
+    sys.stderr.write("Ha. No ldd either? Manually identify your glibc version and copy the correct sources in.\n")
     os._exit(1)
 
 def check_if_binary_stripped():
@@ -157,7 +116,31 @@ def check_if_binary_stripped():
     if m1:
       return m1.group(2)
   except:
-    print "Does the file binary exist on your system?\n"
+    sys.stderr.write("Does the file binary exist on your system?\n")
   
+def write_library_symbols(symbolsfile):
+    """
+    Write all the symbols already detected by a binary to file for parsing at a
+    later time in code.
+    """
+    with open('libraryfuncs','w') as f:
+      for i in library_symbols:
+        f.write(i+'\n')
+
 if __name__ == '__main__':
-  main()
+  """
+  Code execution starts here.
+  """
+
+  saved_idapro_functions_file = 'ida_functions.txt'
+  try:
+    idapro_symbols = get_idapro_symbols(saved_idapro_functions_file)
+    get_glibc_version()
+    is_binary_stripped = check_if_binary_stripped()
+
+    if is_binary_stripped == 'not stripped':
+      list_of_symbols = get_symbols_from_binary()
+      library_symbols = search_library_for_symbols(idapro_symbols)
+      write_library_symbols('libraryfuncs')
+  except:
+    sys.stderr.write('Oops something went wrong. Dunno what. Go debug.\n' )
