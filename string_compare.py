@@ -36,7 +36,7 @@ def string_compare(exe_to_reverse, file_string_map):
         if key != exe_to_reverse:
             l2= value.split('^')
             l3= [i for i in l1 for j in l2 if i==j]
-            match_result[key+'_'+str(len(l3))]= l3
+            match_result[key]= l3
         else:
             continue
 
@@ -56,9 +56,13 @@ if __name__ == "__main__":
     output_dir= 'all_outputs'
     file_string_map={}
     for filename in os.listdir(output_dir):
+        list_strings=[]
         list_strings= get_strings(output_dir+'/'+filename)
         file_string_map[filename[:-4]]='^'.join(list_strings)
 
     match_result= string_compare(exe_to_reverse, file_string_map)
     for key,value in match_result.iteritems():
-        print 'Matches in the file ',key.split('_')[0], ' - ', key.split('_')[1], '\n\t', value, '\n'
+        t1= []
+        t1= [v for v in value if v!='']
+        print t1
+        print "\nNo of matches for the library ",key, "are - ",len(t1),"\n\n"
