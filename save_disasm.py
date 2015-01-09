@@ -21,20 +21,14 @@ def save_disasm_functions_ida():
     if segName == ".text":
       funcs = Functions(SegStart(segAddress), SegEnd(segAddress))
       for address in funcs:
-        disasm_per_function= ''
+        t1= GetFunctionName(address)
         f1= idautils.FuncItems(address)
+        t2=''
         for i in f1:
-          t1= GetFunctionName(i) 
-          if t1.startswith("sub_"):
-            flag= 1
-            disasm_per_function = disasm_per_function + ascii_to_hex(GetDisasm(i))
-          else:
-            break
-          
-        if flag == 1:
-          funcDisassList[t1]= disasm_per_function
-          flag=0
-
+          t2+= GetDisasm(i).split(';')[0]
+          t2+= '^^^'
+        funcDisassList[t1]= t2
+        
   return funcDisassList
 
 def write_to_file(funcDisassList):        
@@ -44,7 +38,7 @@ def write_to_file(funcDisassList):
   with open(output_dir+output_filename,'w') as f:
     for key, value in funcDisassList.iteritems():
       f.write(key)
-      f.write(':')
+      f.write('$$$')
       f.write(value)
       f.write("\n")
 
