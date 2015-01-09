@@ -13,6 +13,7 @@ python function_compare.py driver.txt
 must be renamed directly. This code is nearly done, but I haven't finalized exactly how I want the renaming to happen. Will do that soon.
 
 idaw64 -A -L""C:\data\log.txt" -S"C:\data\rename_funcs.py" driver
+
 -----------------------------------------------------------------------------------------------------------------------
 
 OLD CONTENT. IGNORE FOR NOW. WILL CLEAN SOON.
