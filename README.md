@@ -1,6 +1,22 @@
 slid
 ====
 
+1. Get a list of all the functions and their instructions for the binary you want to reverse as well as all the libraries that you think may be part of it.
+
+FOR %x IN ("C:\data\IDBstore\*.i64") do idaw64 -A -L"C:\data\log.txt" -S"C:\data\save_disasm.py" "%x"
+
+2. Compare functions of the binary with the functions of all the libraries. The aim  here is to identify a match. Save the output of this comparison. In the example below, the output of the statically linked binary is driver.txt
+
+python function_compare.py driver.txt
+
+3. Use the output obtained from the previous step to accordingly rename functions inside IDA. All complete matches
+must be renamed directly. This code is nearly done, but I haven't finalized exactly how I want the renaming to happen. Will do that soon.
+
+idaw64 -A -L""C:\data\log.txt" -S"C:\data\rename_funcs.py" driver
+-----------------------------------------------------------------------------------------------------------------------
+
+OLD CONTENT. IGNORE FOR NOW. WILL CLEAN SOON.
+
 1. Get a list of the functions that are displayed inside IDA. The aim is to identify as many functions as possible that are part of some
    standard library. As of now, we're only looking at glibc. 
    
