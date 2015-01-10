@@ -29,8 +29,6 @@ def get_exe_to_reverse():
 def function_compare(exe_to_reverse, list_functions):
     """
     Compare each function from the binary you want to reverse with all the functions from all other files
-    If there's a match store the name of the DLL and the function that was matched in a dictionary
-    Return the dictionary for further analysis
     """
 
     """
@@ -61,7 +59,10 @@ def function_compare(exe_to_reverse, list_functions):
             match_count= 0
             func_match_flag= 0
 
-            # If function names match - compare values. These  might not always match though - so we need to take this condition out
+            """
+            Do the function names match? I'm not sure this is robust though - will the functions get loaded at the same offsets in the binary
+            and the library as well if both are loaded independently? Anyway, it's a start :)
+            """
             if key1 == key2: 
                 func_match_flag= 1
                 non_matching_instructions[key1]= ''
@@ -77,6 +78,9 @@ def function_compare(exe_to_reverse, list_functions):
                         else:
                             continue
 
+                    """
+                    Track the instructions that do not match, per function.
+                    """
                     if flag == 0:
                         non_matching_instructions[key1]+= i1
                         non_matching_instructions[key1]+= '\n'
@@ -97,6 +101,9 @@ def function_compare(exe_to_reverse, list_functions):
     return non_matching_instructions, matched_functions
 
 def write_results(output_file, matched_functions, non_matching_instructions):
+    """
+    Write results to a file that should then be loaded into IDA
+    """
     with open(output_file,'a') as f:
         """
         Can write all changed instructions as well, for reference purposes. Commented for now.
