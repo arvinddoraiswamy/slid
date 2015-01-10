@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Identify which the actual binary is
     exe_to_reverse= get_exe_to_reverse()
 
-    ida_input_dir= 'all_outputs'
+    ida_input_dir= 'input'
     t2={}
     list_functions= {}
 
