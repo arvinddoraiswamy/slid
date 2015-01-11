@@ -1,3 +1,7 @@
+"""
+Add code to compare only mnemonics and try and make a decision based on that.
+"""
+
 import os
 import argparse
 
@@ -22,9 +26,10 @@ def get_exe_to_reverse():
     """
     parser= argparse.ArgumentParser()
     parser.add_argument('file', nargs=1, help='Enter the name of the file you want to reverse engineer here')
+    parser.add_argument('-m', action="store_true", help='Use this if you want to compare only by mnemonics')
     args = parser.parse_args()
 
-    return args.file[0]
+    return args.file[0], args.m
 
 def function_compare(exe_to_reverse, list_functions):
     """
@@ -100,6 +105,38 @@ def function_compare(exe_to_reverse, list_functions):
             
     return non_matching_instructions, matched_functions
 
+def function_compare_by_mnem(exe_to_reverse, list_functions):
+    """
+    Compare each function from the binary you want to reverse with all the functions from all other files
+    """
+
+    """
+    Separate the functions of the binary and all the libraries so its easy to compare content.
+    """
+    libraries= {}
+
+    for key in list_functions.keys():
+        if not key.startswith(exe_to_reverse+'---'):
+            libraries[key]= list_functions[key]
+            del list_functions[key]
+
+    # Compare just the mnemonics of functions. The danger here is false positives. Lets see though.
+    matched_functions= {}
+    for key1, value1 in list_functions.items():
+        key1= key1.split('---')[1]
+        flag= 0
+        for key2, value2 in libraries.items():
+            key2= key2.split('---')[1]
+            
+            if value1 == value2:
+                flag= 1
+                matched_functions[key1]= key2
+                break
+            else:
+                continue
+
+    return matched_functions
+
 def write_results(output_file, matched_functions, non_matching_instructions):
     """
     Write results to a file that should then be loaded into IDA
@@ -114,25 +151,46 @@ def write_results(output_file, matched_functions, non_matching_instructions):
         """
 
         for key,val in matched_functions.items():
-            f.write(key+"\t"+str(val))
-            f.write("\n")
+            if val != 'na':
+                f.write(key+"\t"+str(val))
+                f.write("\n")
 
 if __name__ == "__main__":
-    # Identify which the actual binary is
-    exe_to_reverse= get_exe_to_reverse()
+    # Identify which the actual binary is and check if you want to compare by mnemonics
+    exe_to_reverse, compare_by_mnem= get_exe_to_reverse()
 
     ida_input_dir= 'input'
     t2={}
     list_functions= {}
 
     #Read all the function names and bodies returned after parsing the IDB files of the binary and all the libraries
-    for filename in os.listdir(ida_input_dir):
-        t2= get_functions(ida_input_dir, filename)
-        list_functions= dict(t2.items()+list_functions.items())
+    if not compare_by_mnem:
+        for filename in os.listdir(ida_input_dir):
+            if not filename.endswith('_mnem.txt'):
+                t2= get_functions(ida_input_dir, filename)
+                list_functions= dict(t2.items()+list_functions.items())
+            else:
+                continue
+
+    elif compare_by_mnem:
+        for filename in os.listdir(ida_input_dir):
+            if filename.endswith('_mnem.txt'):
+                t2= get_functions(ida_input_dir, filename)
+                list_functions= dict(t2.items()+list_functions.items())
+            else:
+                continue
 
     # This is what does the actual comparison
-    non_matching_instructions, matched_functions = function_compare(exe_to_reverse, list_functions)
+    non_matching_instructions={}
+    if not filename.endswith('_mnem.txt'):
+        non_matching_instructions, matched_functions = function_compare(exe_to_reverse, list_functions)
+    elif filename.endswith('_mnem.txt'):
+        matched_functions = function_compare_by_mnem(exe_to_reverse, list_functions)
 
     # Write IDA results to file
     output_file= 'output.txt'
-    write_results(output_file, matched_functions, non_matching_instructions)
+    
+    if non_matching_instructions:
+        write_results(output_file, matched_functions, non_matching_instructions)
+    else:
+        write_results(output_file, matched_functions, 'NA')
