@@ -42,6 +42,7 @@ def save_mnemonics_functions_ida(f1):
     if segName == ".text":
       funcs = Functions(SegStart(segAddress), SegEnd(segAddress))
       for address in funcs:
+        print hex(address)
         t1= GetFunctionName(address)
         f1= idautils.FuncItems(address)
         t2=''

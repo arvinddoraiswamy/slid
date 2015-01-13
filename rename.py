@@ -18,8 +18,7 @@ def read_input():
   for i in functions:
     t1= i.split("\t")
     src= t1[0].split('<')
-    address= src[1]
-    
+    address= src[1]    
     dest= t1[1].split('>')
 
     #Use the destination filename as the value. This is what you need to rename your function to.
@@ -30,7 +29,7 @@ def read_input():
 def rename_functions_ida(renamed_functions):
   for key, val in renamed_functions.items():
     val= 'library_'+val
-    #MakeNameEx(funcaddress,"glibc_"+name,SN_NOWARN)
+    MakeNameEx(int(key, 10), val, SN_NOWARN)
 
 #Wait for analysis to complete
 idaapi.autoWait()

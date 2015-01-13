@@ -132,7 +132,7 @@ def function_compare_by_mnem(exe_to_reverse, list_functions):
             t2= value2.split('<')
             if t1[0] == t2[0]:
                 flag= 1
-                matched_functions[key1+'<'+t1[1][2:-1]]= key2
+                matched_functions[key1+'<'+t1[1]]= key2
                 break
             else:
                 continue
