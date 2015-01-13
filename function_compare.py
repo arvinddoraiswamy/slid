@@ -128,9 +128,11 @@ def function_compare_by_mnem(exe_to_reverse, list_functions):
         for key2, value2 in libraries.items():
             key2= key2.split('---')[1]
             
-            if value1 == value2:
+            t1= value1.split('<')
+            t2= value2.split('<')
+            if t1[0] == t2[0]:
                 flag= 1
-                matched_functions[key1]= key2
+                matched_functions[key1+'<'+t1[1][2:-1]]= key2
                 break
             else:
                 continue
@@ -182,13 +184,13 @@ if __name__ == "__main__":
 
     # This is what does the actual comparison
     non_matching_instructions={}
-    if not filename.endswith('_mnem.txt'):
+    if not exe_to_reverse.endswith('_mnem.txt'):
         non_matching_instructions, matched_functions = function_compare(exe_to_reverse, list_functions)
-    elif filename.endswith('_mnem.txt'):
+    elif exe_to_reverse.endswith('_mnem.txt'):
         matched_functions = function_compare_by_mnem(exe_to_reverse, list_functions)
 
     # Write IDA results to file
-    output_file= 'output.txt'
+    output_file= 'input_to_rename_function.txt'
     
     if non_matching_instructions:
         write_results(output_file, matched_functions, non_matching_instructions)

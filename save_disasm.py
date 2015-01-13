@@ -12,7 +12,8 @@ def ascii_to_hex(string):
   t2=re.sub('0x','',t2)
   return t2
 
-def save_disasm_functions_ida():
+def save_disasm_functions_ida(f1):
+  filename= f1
   funcDisassList = {}
   flag= 0
 
@@ -27,11 +28,12 @@ def save_disasm_functions_ida():
         for i in f1:
           t2+= GetDisasm(i).split(';')[0]
           t2+= '^^^'
-        funcDisassList[t1]= t2
+        funcDisassList[filename+'>'+t1]= t2+'<'+str(address)
         
   return funcDisassList
 
-def save_mnemonics_functions_ida():
+def save_mnemonics_functions_ida(f1):
+  filename= f1
   mnemonics = {}
   flag= 0
 
@@ -46,7 +48,7 @@ def save_mnemonics_functions_ida():
         for i in f1:
           t2+= GetMnem(i)
           t2+= '^^^'
-        mnemonics[t1]= t2
+        mnemonics[filename+'>'+t1]= t2+'<'+str(address)
         
   return mnemonics
 
@@ -74,8 +76,8 @@ def write_to_file(funcDisassList, mnemonics):
 idaapi.autoWait()
 
 #Save disassembly of binary to a file
-funcDisassList= save_disasm_functions_ida()
-mnemonics= save_mnemonics_functions_ida()
+funcDisassList= save_disasm_functions_ida(str(idc.GetInputFile()))
+mnemonics= save_mnemonics_functions_ida(str(idc.GetInputFile()))
 
 write_to_file(funcDisassList, mnemonics)
 
