@@ -1,4 +1,0 @@
-add_name_to_object.isra.3	na
-_L_unlock_138	na
-dl_iterate_phdr	na
-fun	fun:1
