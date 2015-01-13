@@ -29,7 +29,11 @@ def read_input():
 def rename_functions_ida(renamed_functions):
   for key, val in renamed_functions.items():
     val= 'library_'+val
-    MakeNameEx(int(key, 10), val, SN_NOWARN)
+    r1= MakeNameEx(int(key, 10), val, SN_NOWARN)
+    if r1 == 0:
+      print "Renaming of %s failed" %key
+    else:
+      print "Renaming of %s succeeded" %key
 
 #Wait for analysis to complete
 idaapi.autoWait()
