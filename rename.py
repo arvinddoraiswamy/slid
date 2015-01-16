@@ -4,6 +4,7 @@ Get the correct syntax to rename the function name. Otherwise we're all good :)
 
 import idaapi
 import idautils
+import time
 
 def read_input():
   """
@@ -11,30 +12,38 @@ def read_input():
   renamed to.
   """
   input_file_name= 'input_to_rename_function.txt'
-  with open(input_file_name, 'rU') as f:
+  with open(input_file_name, 'r') as f:
     functions= f.readlines()
 
   renamed_functions= {}
   for i in functions:
     t1= i.split("\t")
     src= t1[0].split('<')
-    address= src[1]    
+    address= src[1]
+    address= address.rstrip()
     dest= t1[1].split('>')
 
-    #Use the destination filename as the value. This is what you need to rename your function to.
-    renamed_functions[address]= dest[0]
-
+    """
+    Use the destination filename as the value. This is what you need to rename your function to. For some weird reason the rename randomly fails if I do this.
+    Hence, for now, I'll keep a blank key.
+    """
+    #renamed_functions[address]= str(dest[0])
+    renamed_functions[address]= ''
   return renamed_functions
 
 def rename_functions_ida(renamed_functions):
+  count= 0
   for key, val in renamed_functions.items():
-    val= 'library_'+val
-    r1= MakeNameEx(int(key, 10), val, SN_NOWARN)
+    count+= 1
+    val= 'library_'+str(count)
+    r1= MakeNameEx(int(key), val, SN_NOWARN)  
     if r1 == 0:
-      print "Renaming of %s failed" %key
+      print "Renaming of %s failed" %int(key)
     else:
-      print "Renaming of %s succeeded" %key
-
+      print "Renaming of %s succeeded" %int(key)
+  print count
+  time.sleep(3)
+    
 #Wait for analysis to complete
 idaapi.autoWait()
 

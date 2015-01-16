@@ -1,5 +1,5 @@
 """
-Add code to compare only mnemonics and try and make a decision based on that.
+Remove text comparison code from here.
 """
 
 import os
@@ -128,6 +128,8 @@ def function_compare_by_mnem(exe_to_reverse, list_functions):
         for key2, value2 in libraries.items():
             key2= key2.split('---')[1]
             
+            value1= value1.rstrip()
+            value2= value2.rstrip()
             t1= value1.split('<')
             t2= value2.split('<')
             if t1[0] == t2[0]:
@@ -153,9 +155,9 @@ def write_results(output_file, matched_functions, non_matching_instructions):
         """
 
         for key,val in matched_functions.items():
-            if val != 'na':
-                f.write(key+"\t"+str(val))
-                f.write("\n")
+            #if val != 'na':
+            f.write(key+"\t"+str(val))
+            f.write("\n")
 
 if __name__ == "__main__":
     # Identify which the actual binary is and check if you want to compare by mnemonics
