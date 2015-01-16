@@ -12,26 +12,6 @@ def ascii_to_hex(string):
   t2=re.sub('0x','',t2)
   return t2
 
-def save_disasm_functions_ida(f1):
-  filename= f1
-  funcDisassList = {}
-  flag= 0
-
-  for segAddress in Segments():
-    segName = SegName(segAddress)
-    if segName == ".text":
-      funcs = Functions(SegStart(segAddress), SegEnd(segAddress))
-      for address in funcs:
-        t1= GetFunctionName(address)
-        f1= idautils.FuncItems(address)
-        t2=''
-        for i in f1:
-          t2+= GetDisasm(i).split(';')[0]
-          t2+= '^^^'
-        funcDisassList[filename+'>'+t1]= t2+'<'+str(address)
-        
-  return funcDisassList
-
 def save_mnemonics_functions_ida(f1):
   filename= f1
   mnemonics = {}
@@ -42,7 +22,6 @@ def save_mnemonics_functions_ida(f1):
     if segName == ".text":
       funcs = Functions(SegStart(segAddress), SegEnd(segAddress))
       for address in funcs:
-        print hex(address)
         t1= GetFunctionName(address)
         f1= idautils.FuncItems(address)
         t2=''
@@ -53,18 +32,10 @@ def save_mnemonics_functions_ida(f1):
         
   return mnemonics
 
-def write_to_file(funcDisassList, mnemonics):        
+def write_to_file(mnemonics):        
   #Write results to output file
-  output_dir="C:\data\output\\"
+  output_dir="input\\"
   
-  output_disass_filename=str(idc.GetInputFile())+'.txt'
-  with open(output_dir+output_disass_filename,'w') as f:
-    for key, value in funcDisassList.iteritems():
-      f.write(key)
-      f.write('$$$')
-      f.write(value)
-      f.write("\n")
-
   output_mnemonics_filename=str(idc.GetInputFile())+'_mnem.txt'
   with open(output_dir+output_mnemonics_filename,'w') as f:
     for key, value in mnemonics.iteritems():
@@ -76,10 +47,9 @@ def write_to_file(funcDisassList, mnemonics):
 #Wait for analysis to complete
 idaapi.autoWait()
 
-#Save disassembly of binary to a file
-funcDisassList= save_disasm_functions_ida(str(idc.GetInputFile()))
+#Save mnemonics of all the functions of a binary to a file
 mnemonics= save_mnemonics_functions_ida(str(idc.GetInputFile()))
 
-write_to_file(funcDisassList, mnemonics)
+write_to_file(mnemonics)
 
 idc.Exit(0)

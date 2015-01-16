@@ -41,7 +41,7 @@ def rename_functions_ida(renamed_functions):
       print "Renaming of %s failed" %int(key)
     else:
       print "Renaming of %s succeeded" %int(key)
-  print count
+  print count," functions were renamed in IDA"
   time.sleep(3)
     
 #Wait for analysis to complete
