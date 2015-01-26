@@ -1,1 +1,0 @@
-fun$$$push    rbp^^^mov     rbp, rsp^^^mov     eax, offset format^^^mov     rdi, rax        ^^^mov     eax, 0^^^call    printf^^^pop     rbp^^^retn^^^
