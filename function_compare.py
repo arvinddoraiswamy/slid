@@ -49,9 +49,12 @@ def function_compare_by_mnem(exe_to_reverse, list_functions):
 
     # Compare just the mnemonics of functions. The danger here is false positives. Lets see though.
     matched_functions= {}
+    all_matches      = {}
+    
     for key1, value1 in list_functions.items():
         key1= key1.split('---')[1]
         flag= 0
+
         for key2, value2 in libraries.items():
             key2= key2.split('---')[1]
             
@@ -59,24 +62,46 @@ def function_compare_by_mnem(exe_to_reverse, list_functions):
             value2= value2.rstrip()
             t1= value1.split('<')
             t2= value2.split('<')
+            
             if t1[0] == t2[0]:
                 flag= 1
-                matched_functions[key1+'<'+t1[1]]= key2
-                break
+                if not matched_functions.has_key(key1+'<'+t1[1]):
+                    matched_functions[key1+'<'+t1[1]]= key2
+                elif matched_functions.has_key(key1+'<'+t1[1]):
+                    matched_functions[key1+'<'+t1[1]]+= ','+key2
+                #if all_matches.has_key(key1+'<'+t1[1]):
+                #    all_matches[key1+'<'+t1[1]]+= ','+key2
+                #elif not all_matches.has_key(key1+'<'+t1[1]):
+                #    all_matches[key1+'<'+t1[1]]= key2
+                #break
             else:
                 continue
 
-    return matched_functions
+        #if all_matches.has_key(key1+'<'+t1[1]):
+        #    all_matches[key1+'<'+t1[1]] += '\n'*2
+        #elif not all_matches.has_key(key1+'<'+t1[1]):
+        #    all_matches[key1+'<'+t1[1]]  = 'No matches found'+'\n'*2
 
+    #return matched_functions, all_matches
+    return matched_functions   
+
+#def write_results(output_file, matched_functions, all_matches, non_matching_instructions):
 def write_results(output_file, matched_functions, non_matching_instructions):
     """
     Write results to a file that should then be loaded into IDA
     """
+    #all_matches_output_file= "all_matches.txt"
+    
     with open(output_file,'a') as f:
         for key,val in matched_functions.items():
             f.write(key+"\t"+str(val))
             f.write("\n")
 
+    #with open(all_matches_output_file,'a') as f:
+    #    for key,val in all_matches.items():
+    #        f.write(key+"\t"+str(val))
+    #        f.write("\n")
+            
 def check_file_existence(ida_input_dir, exe_to_reverse):
     fullpath= ida_input_dir+'/'+exe_to_reverse
     if os.path.exists(fullpath):
@@ -116,6 +141,7 @@ if __name__ == "__main__":
 
     # This is what does the actual comparison
     if exe_to_reverse.endswith('_mnem.txt'):
+        #matched_functions, all_matches = function_compare_by_mnem(exe_to_reverse, list_functions)
         matched_functions = function_compare_by_mnem(exe_to_reverse, list_functions)
     else:
         print "Ignoring file ",exe_to_reverse,"\n"
@@ -124,4 +150,5 @@ if __name__ == "__main__":
 
     # Write IDA results to file
     output_file= 'input_to_rename_function.txt'
+    #write_results(output_file, matched_functions, all_matches, 'NA')
     write_results(output_file, matched_functions, 'NA')

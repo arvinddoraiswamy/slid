@@ -21,27 +21,35 @@ def read_input():
     src= t1[0].split('<')
     address= src[1]
     address= address.rstrip()
-    dest= t1[1].split('>')
+    dest= t1[1].split(',')
 
     """
-    Use the destination filename as the value. This is what you need to rename your function to. For some weird reason the rename randomly fails if I do this.
-    Hence, for now, I'll keep a blank key.
+    Use the destination filename as the value. This is what you need to rename your function to.
     """
     #renamed_functions[address]= str(dest[0])
-    renamed_functions[address]= ''
+    renamed_functions[address]= dest
   return renamed_functions
 
 def rename_functions_ida(renamed_functions):
-  count= 0
+  single_count= 0
+  multiple_count= 0
   for key, val in renamed_functions.items():
-    count+= 1
-    val= 'library_'+str(count)
-    r1= MakeNameEx(int(key), val, SN_NOWARN)  
+    funcname= GetFunctionName(int(key))
+    if len(val) == 1 and funcname.startswith('sub_'):
+      single_count+= 1
+      val= 'single_'+str(single_count)
+    elif len(val) > 1 and funcname.startswith('sub_'):
+      multiple_count+= 1
+      val= 'multiple_'+str(multiple_count)
+    else:
+      continue
+
+    r1= MakeNameEx(int(key), val, SN_NOWARN)
     if r1 == 0:
       print "Renaming of %s failed" %int(key)
     else:
       print "Renaming of %s succeeded" %int(key)
-  print count," functions were renamed in IDA"
+  print single_count+multiple_count," functions were renamed in IDA"
   time.sleep(3)
     
 #Wait for analysis to complete
