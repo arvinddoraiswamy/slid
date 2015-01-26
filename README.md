@@ -11,7 +11,7 @@ to reverse as well as all the libraries you think are a part of the binary in th
    The result of running this script will store the disassembly of the binary to be reversed and a lot of the
    associated libraries in a folder called *input*.
 
-* Compare functions of the binary with the functions of all the libraries. The aim  here is to identify a match. Save the output of this comparison. In the example below, the output of the statically linked binary is test_mnem.txt. The -m option compares only the mnemonics and will have better accuracy.
+* Compare functions of the binary with the functions of all the libraries. In the example below, the output of the statically linked binary is test_mnem.txt. The -m option compares only the mnemonics of all the functions.
 
   **python function_compare.py test_mnem.txt -m**
   
