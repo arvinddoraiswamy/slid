@@ -2,7 +2,7 @@ slid
 ====
 
 * Get a list of all the functions and their instructions for the binary you want to reverse as well as all the libraries that you think may be part of it. Before running this script, make sure you have the binary you want
-to reverse as well as all the libraries you think are a part of the binary in the *input* directory.
+to reverse as well as all the libraries you think are a part of the binary in the *"C:\data\IDBstore"* directory.
 
    For the code I used I put the *test* binary as well as all the files from the *libc.a* archive into the directory      *"C:\data\IDBstore"*. The *libc.a* archive was found on my system at */usr/lib/x86_64-linux-gnu/libc.a*. The files     from this archive can be extracted by using the command *ar x /usr/lib/x86_64-linux-gnu/libc.a*
 
