@@ -17,11 +17,10 @@ to reverse as well as all the libraries you think are a part of the binary in th
   
   The result of running this script will be stored in a new file called *input_to_rename_function.txt*.
 
-* Use the output obtained from the previous script to accordingly rename functions inside IDA. All complete 
-  matches will be renamed directly.
+* Use the output obtained from the previous script to accordingly rename functions inside IDA.
 
   **idaw64 -A -L""C:\data\log.txt" -S"C:\data\rename.py" test**
   
-  The result of running this script is that all the functions that started with sub_ inside the binary to be reversed
+  The result of running this script is that all the functions that started with *sub_* inside the binary to be reversed
   AND found a match with some library somewhere will be renamed. Open up the saved IDB as usual - you will see that
   a number of functions have been renamed.
