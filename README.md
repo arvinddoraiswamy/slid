@@ -1,5 +1,9 @@
 slid
 ====
+* All sample code is in the sample_code folder
+* All screenshots are in the screenshots folder
+* All code was tested on IDA PRO 6.4 on Windows 7. All commands are to be run from the Windows CMD prompt
+* Sample code was compiled on Ubuntu 12.04 and gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5)
 
 * Get a list of all the functions and their instructions for the binary you want to reverse as well as all the libraries that you think may be part of it. Before running this script, make sure you have the binary you want
 to reverse as well as all the libraries you think are a part of the binary in the *"C:\data\IDBstore"* directory.
